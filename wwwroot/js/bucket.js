@@ -1,6 +1,8 @@
 "use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/bucketHub").build();
+var bucketId = window.location.pathname.split('/')[2];
+console.log('BucketID:' + bucketId);
+var connection = new signalR.HubConnectionBuilder().withUrl("/bucketHub?bucketId="+bucketId).build();
 
 connection.on("ReceiveBucketMessage", function (date, message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
