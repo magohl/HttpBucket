@@ -20521,28 +20521,28 @@
   "RootNamespace": "HttpBucket",
   "Documents": [
     {
-      "FilePath": "c:\\source\\HttpBucket\\Pages\\Shared\\_Layout.cshtml",
-      "TargetPath": "Pages\\Shared\\_Layout.cshtml",
+      "FilePath": "c:\\source\\HttpBucket\\Pages\\Ui\\_ViewImports.cshtml",
+      "TargetPath": "Pages\\Ui\\_ViewImports.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\source\\HttpBucket\\Pages\\Index.cshtml",
-      "TargetPath": "Pages\\Index.cshtml",
+      "FilePath": "c:\\source\\HttpBucket\\Pages\\Ui\\_Layout.cshtml",
+      "TargetPath": "Pages\\Ui\\_Layout.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\source\\HttpBucket\\Pages\\Error.cshtml",
-      "TargetPath": "Pages\\Error.cshtml",
+      "FilePath": "c:\\source\\HttpBucket\\Pages\\Ui\\_ViewStart.cshtml",
+      "TargetPath": "Pages\\Ui\\_ViewStart.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\source\\HttpBucket\\Pages\\_ViewStart.cshtml",
-      "TargetPath": "Pages\\_ViewStart.cshtml",
+      "FilePath": "c:\\source\\HttpBucket\\Pages\\Ui\\Index.cshtml",
+      "TargetPath": "Pages\\Ui\\Index.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "c:\\source\\HttpBucket\\Pages\\_ViewImports.cshtml",
-      "TargetPath": "Pages\\_ViewImports.cshtml",
+      "FilePath": "c:\\source\\HttpBucket\\Pages\\Ui\\Error.cshtml",
+      "TargetPath": "Pages\\Ui\\Error.cshtml",
       "FileKind": "mvc"
     }
   ],

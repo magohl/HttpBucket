@@ -37,23 +37,37 @@ namespace HttpBucket
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Map("/{returncode?}/bucket/{*url}", async context =>
+                endpoints.Map("/{returncode:int?}/{bucket:guid}/{*url}", async context =>
                 {
                     var retCode = ParseReturnCode(context);
-                    await OutputRequestInfo(context, retCode);
+                    var bucketId = ParseBucketId(context);
+                    await OutputRequestInfo(context, retCode, bucketId);
                     context.Response.StatusCode = retCode;
                 });
 
-                endpoints.Map("/bucket/{*url}", async context =>
+                endpoints.Map("{bucket:guid}/{*url}", async context =>
                 {
                     var retCode=200;
-                    await OutputRequestInfo(context, retCode);
+                    var bucketId = ParseBucketId(context);
+                    await OutputRequestInfo(context, retCode, bucketId);
                     context.Response.StatusCode = retCode;
                 });
 
                 endpoints.MapRazorPages();
                 endpoints.MapHub<BucketHub>("/bucketHub");
             });
+        }
+
+        private Guid ParseBucketId(HttpContext context)
+        {
+            var routeValues = context.GetRouteData().Values;
+            var bucketIdValue = routeValues["bucket"] as string;
+
+            if (!Guid.TryParse(bucketIdValue, out var bucketId))
+            {
+                throw new ArgumentException();
+            }
+            return bucketId;
         }
 
         private static int ParseReturnCode(HttpContext context)
@@ -65,7 +79,7 @@ namespace HttpBucket
             return retCode;
 
         }
-        private static async Task OutputRequestInfo(HttpContext context, int retCode)
+        private static async Task OutputRequestInfo(HttpContext context, int retCode, Guid bucketId)
         {
             _messageCounter++;
 
@@ -79,7 +93,7 @@ namespace HttpBucket
             }
 
             var message = $"[Id {_messageCounter}] {context.Request.Method} {context.Request.Path} | Returning status {retCode} | Body: {(body==String.Empty ? "[NO BODY RECEVIED]" : body)}";
-            await hubContext.Clients.All.SendAsync("ReceiveBucketMessage", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), message);
+            await hubContext.Clients.Group(bucketId.ToString()).SendAsync("ReceiveBucketMessage", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), message);
         }
 
     }
