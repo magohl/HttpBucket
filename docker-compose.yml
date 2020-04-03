@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  httpbucket:
+    image: httpbucket
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80
