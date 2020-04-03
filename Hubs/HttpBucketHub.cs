@@ -11,6 +11,7 @@ namespace HttpBucket.Hubs
             var bucketId = httpContext.Request.Query["bucketId"];
             await Groups.AddToGroupAsync(Context.ConnectionId, bucketId);
 
+
             await base.OnConnectedAsync();
         }
     }

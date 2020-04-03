@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HttpBucket.Hubs;
+using Microsoft.AspNetCore.HttpOverrides;
+using HttpBucket.Stores;
+using HttpBucket.Models;
 
 namespace HttpBucket
 {
     public class Startup
     {
-        private static int _messageCounter=0;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,12 +27,15 @@ namespace HttpBucket
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IBucketStore, BucketStore>();
+
             services.AddRazorPages();
             services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
             app.UseExceptionHandler("/Error");
             app.UseStaticFiles();
             app.UseRouting();
@@ -77,14 +82,15 @@ namespace HttpBucket
 
             if (!int.TryParse(retCodeValue, out var retCode)) return 200;
             return retCode;
-
         }
+
         private static async Task OutputRequestInfo(HttpContext context, int retCode, Guid bucketId)
         {
-            _messageCounter++;
-
             var hubContext = context.RequestServices
                 .GetRequiredService<IHubContext<BucketHub>>();
+
+            var store = context.RequestServices
+                .GetRequiredService<IBucketStore>();
 
             string body;
             using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
@@ -92,9 +98,14 @@ namespace HttpBucket
                 body = await reader.ReadToEndAsync();
             }
 
-            var message = $"[Id {_messageCounter}] {context.Request.Method} {context.Request.Path} | Returning status {retCode} | Body: {(body==String.Empty ? "[NO BODY RECEVIED]" : body)}";
-            await hubContext.Clients.Group(bucketId.ToString()).SendAsync("ReceiveBucketMessage", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), message);
-        }
+            var entry = new BucketEntry
+            {
+                Received = DateTime.Now,
+                Message = $"[Id {store.Counter(bucketId)}] {context.Request.Method} {context.Request.Path} | Returning status {retCode} | Body: {(body==String.Empty ? "[NO BODY]" : body)}"
+            };
 
+            store.AddEntry(bucketId, entry);
+            await hubContext.Clients.Group(bucketId.ToString()).SendAsync("ReceiveBucketMessage", entry.Received.ToString("yyyy-MM-dd HH:mm:ss"), entry.Message);
+        }
     }
 }

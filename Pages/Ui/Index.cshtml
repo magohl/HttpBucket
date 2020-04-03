@@ -4,15 +4,19 @@
 <div class="container">
     <div>
         <h2>HTTP Bucket</h2>
-        <p>Started @DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")</p>
-        <p>Make a HTTP GET/POST/PUT/DELETE to <b>/bucket/</b>whatever-url and you get a 200 in return and the request will show up below</p>
-        <p>Add desired http status-code like <b>/204/bucket/</b>whatever-url and you will get the desired statuscode in return</p>
-        <p>Note that this is a shared bucket!</p>
+        <p>(Created @Model.Created.ToString("yyyy-MM-dd hh:mm:ss"))</p>
+        <p>Make a HTTP request (GET/POST/PUT/DELETE) to <b>@Request.Scheme://@Request.Host/@Model.BucketId/foo/bar/whatever</b> and you get a 200 in return and the request will show up below.</p>
+        <p>To return a different http status-code add that to the url like this <b>@Request.Scheme://@Request.Host/204/@Model.BucketId/someurl</b></p>
         <hr>
     </div>
     <div class="row">
         <div class="col-12">
-            <ul class="list-group" id="messagesList"></ul>
+            <ul class="list-group" id="messagesList">
+                @foreach (var item in @Model.HistoricEntries.OrderByDescending(o=>o.Received))
+                {
+                    <li class="list-group-item">@item.Received.ToString("yyyy-MM-dd HH:mm:ss") | @item.Message</li>
+                }
+            </ul>
         </div>
     </div>
 </div>
