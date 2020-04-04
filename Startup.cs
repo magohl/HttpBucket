@@ -13,6 +13,8 @@ using HttpBucket.Hubs;
 using Microsoft.AspNetCore.HttpOverrides;
 using HttpBucket.Stores;
 using HttpBucket.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HttpBucket
 {
@@ -102,12 +104,16 @@ namespace HttpBucket
 
             var entry = new BucketEntry
             {
+                Id = store.Counter(bucketId),
                 Received = DateTime.Now,
-                Message = $"[Id {store.Counter(bucketId)}] {context.Request.Method} {context.Request.Path} | Returning status {retCode} | Body: {(body==String.Empty ? "[NO BODY]" : body)}"
+                StatusCodeToReturn = retCode,
+                Method = context.Request.Method,
+                Path = context.Request.Path,
+                Body = String.IsNullOrEmpty(body) ? "[EMPTY BODY]" : body
             };
 
             store.AddEntry(bucketId, entry);
-            await hubContext.Clients.Group(bucketId.ToString()).SendAsync("ReceiveBucketMessage", entry.Received.ToString("yyyy-MM-dd HH:mm:ss"), entry.Message);
+            await hubContext.Clients.Group(bucketId.ToString()).SendAsync("ReceiveBucketMessage", entry);
         }
     }
 }

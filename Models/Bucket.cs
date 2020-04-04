@@ -8,10 +8,9 @@ namespace HttpBucket.Models
         public Bucket()
         {
             Created = DateTime.Now;
-            Entries = new List<BucketEntry>();
         }
         public Guid Id {get;set;}
         public DateTime Created {get;private set;}
-        public List<BucketEntry> Entries { get; set; }
+        public List<BucketEntry> Entries { get; set; } = new List<BucketEntry>();
     }
 }
