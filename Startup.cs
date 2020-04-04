@@ -29,13 +29,15 @@ namespace HttpBucket
         {
             services.AddSingleton<IBucketStore, BucketStore>();
 
-            services.AddRazorPages();
+            services.AddRazorPages(options =>
+            {
+                options.Conventions.AddPageRoute("/UI/New", "");
+            });
             services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseForwardedHeaders();
             app.UseExceptionHandler("/Error");
             app.UseStaticFiles();
             app.UseRouting();
