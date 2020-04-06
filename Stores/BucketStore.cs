@@ -34,7 +34,12 @@ namespace HttpBucket.Stores
 
         public int Counter(Guid bucketId)
         {
-            return Buckets.FirstOrDefault(f=>f.Id==bucketId).Entries.Count;
+            var bucket = Buckets.FirstOrDefault(f=>f.Id==bucketId);
+            if (bucket != null)
+            {
+                return bucket.Entries.Count+1;
+            }
+            return 0;
         }
         
         public DateTime Created(Guid bucketId)
