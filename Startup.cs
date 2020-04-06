@@ -15,6 +15,7 @@ using HttpBucket.Stores;
 using HttpBucket.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Primitives;
 
 namespace HttpBucket
 {
@@ -88,6 +89,16 @@ namespace HttpBucket
             return retCode;
         }
 
+        private static string ParseHeaders(IEnumerable<KeyValuePair<string, StringValues>> keyValuePairs)
+        {
+            var sb = new StringBuilder();
+            foreach (var value in keyValuePairs)
+            {
+                sb.AppendLine(value.Key + " = " + string.Join(", ", value.Value));
+            }
+            return sb.ToString();
+        }
+
         private static async Task OutputRequestInfo(HttpContext context, int retCode, Guid bucketId)
         {
             var hubContext = context.RequestServices
@@ -105,10 +116,11 @@ namespace HttpBucket
             var entry = new BucketEntry
             {
                 Id = store.Counter(bucketId),
-                Received = DateTime.Now,
+                Received = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 StatusCodeToReturn = retCode,
                 Method = context.Request.Method,
                 Path = context.Request.Path,
+                Headers = ParseHeaders(context.Request.Headers),
                 Body = String.IsNullOrEmpty(body) ? "[EMPTY BODY]" : body
             };
 

@@ -19,8 +19,12 @@ connection.on("ReceiveBucketMessage", function (data) {
     addCell(row, 1, data.received);
     addCell(row, 2, data.method);
     addCell(row, 3, data.path);
-    addCell(row, 4, data.statusCodeToReturn);
-    addCell(row, 5, data.body);
+
+    var cell = row.insertCell(4);    
+    cell.innerHTML = "<i class='fas fa-list' title='" + data.headers + "'></i>";
+    
+    addCell(row, 5, data.statusCodeToReturn);
+    addCell(row, 6, data.body);
 });
 
 function addCell(row, cellId, data) {
