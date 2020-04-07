@@ -1,10 +1,13 @@
 ﻿@page
 @model HttpBucket.Pages.NewModel
 <div class="container">
-    <div>
-        <h2>HTTP Bucket</h2>
-        <p>Create a new bucket by clicking the button below.</p>
-        <a class="btn btn-primary" href="/ui/@Guid.NewGuid()" role="button">Get me a new bucket!</a>
-        <hr>
+
+    <div class="jumbotron">
+        <h2 class="h1-responsive">HTTP Bucket</h2>
+        <p class="lead">Capture, look at and troublshoot HTTP requests from interfaces, microservices or browsers. Remember the link and return to it later if you need to. Several persons can share/view the sam bucket.</p>
+        <hr class="my-2">
+        <p>Create a new bucket by clicking the button below.
+        </p>
+        <a class="btn btn-primary btn-lg" href="/ui/@Guid.NewGuid()" role="button">Get me a new bucket!</a>
     </div>
 </div>
