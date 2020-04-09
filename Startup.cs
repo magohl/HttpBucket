@@ -21,12 +21,12 @@ namespace HttpBucket
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -50,17 +50,13 @@ namespace HttpBucket
                 endpoints.Map("/{returncode:int?}/{bucket:guid}/{*url}", async context =>
                 {
                     var retCode = ParseReturnCode(context);
-                    var bucketId = ParseBucketId(context);
-                    await OutputRequestInfo(context, retCode, bucketId);
-                    context.Response.StatusCode = retCode;
+                    await ProcessRequest(context, retCode);
                 });
 
                 endpoints.Map("{bucket:guid}/{*url}", async context =>
                 {
-                    var retCode=200;
-                    var bucketId = ParseBucketId(context);
-                    await OutputRequestInfo(context, retCode, bucketId);
-                    context.Response.StatusCode = retCode;
+                    var retCode= StatusCodes.Status200OK;
+                    await ProcessRequest(context, retCode);
                 });
 
                 endpoints.MapRazorPages();
@@ -68,38 +64,21 @@ namespace HttpBucket
             });
         }
 
-        private Guid ParseBucketId(HttpContext context)
-        {
-            var routeValues = context.GetRouteData().Values;
-            var bucketIdValue = routeValues["bucket"] as string;
 
-            if (!Guid.TryParse(bucketIdValue, out var bucketId))
+        /* --- PRIVATE METHODS --- */
+        private async Task ProcessRequest(HttpContext context, int retCode)
+        {
+            var bucketId = ParseBucketId(context);
+            if (!BucketExist(context, bucketId))
             {
-                throw new ArgumentException();
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                return;
             }
-            return bucketId;
+            await OutputRequestInfo(context, retCode, bucketId);
+            context.Response.StatusCode = retCode;
         }
-
-        private static int ParseReturnCode(HttpContext context)
-        {
-            var routeValues = context.GetRouteData().Values;
-            var retCodeValue = routeValues["returncode"] as string;
-
-            if (!int.TryParse(retCodeValue, out var retCode)) return 200;
-            return retCode;
-        }
-
-        private static string ParseHeaders(IEnumerable<KeyValuePair<string, StringValues>> keyValuePairs)
-        {
-            var sb = new StringBuilder();
-            foreach (var value in keyValuePairs)
-            {
-                sb.AppendLine(value.Key + " = " + string.Join(", ", value.Value));
-            }
-            return sb.ToString();
-        }
-
-        private static async Task OutputRequestInfo(HttpContext context, int retCode, Guid bucketId)
+        
+        private async Task OutputRequestInfo(HttpContext context, int retCode, Guid bucketId)
         {
             var hubContext = context.RequestServices
                 .GetRequiredService<IHubContext<BucketHub>>();
@@ -126,6 +105,45 @@ namespace HttpBucket
 
             store.AddEntry(bucketId, entry);
             await hubContext.Clients.Group(bucketId.ToString()).SendAsync("ReceiveBucketMessage", entry);
+        }
+
+        private bool BucketExist(HttpContext context, Guid bucketId)
+        {
+            var store = context.RequestServices
+                .GetRequiredService<IBucketStore>();
+
+            return store.Buckets.Any(b=>b.Id==bucketId);
+        }  
+
+        private Guid ParseBucketId(HttpContext context)
+        {
+            var routeValues = context.GetRouteData().Values;
+            var bucketIdValue = routeValues["bucket"] as string;
+
+            if (!Guid.TryParse(bucketIdValue, out var bucketId))
+            {
+                throw new ArgumentException();
+            }
+            return bucketId;
+        }
+
+        private int ParseReturnCode(HttpContext context)
+        {
+            var routeValues = context.GetRouteData().Values;
+            var retCodeValue = routeValues["returncode"] as string;
+
+            if (!int.TryParse(retCodeValue, out var retCode)) return 200;
+            return retCode;
+        }
+
+        private string ParseHeaders(IEnumerable<KeyValuePair<string, StringValues>> keyValuePairs)
+        {
+            var headersStringBuilder = new StringBuilder();
+            foreach (var value in keyValuePairs)
+            {
+                headersStringBuilder.AppendLine(value.Key + " = " + string.Join(", ", value.Value));
+            }
+            return headersStringBuilder.ToString();
         }
     }
 }

@@ -11,7 +11,7 @@ Currently the requests are persisted in memory only. Might add SQLite or MongoDB
 - SignalR Core
 
 
-# Docker
+# Docker (examples)
 Run in docker
 docker run -p 8080:80 magohl/httpbucket:0.5
 
