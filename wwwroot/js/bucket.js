@@ -1,17 +1,12 @@
 "use strict";
 
-// Popovers Initialization
-$(function () {
-    $('[data-toggle="popover"]').popover()
-});
-
 var bucketId = window.location.pathname.split('/')[2];
-console.log('BucketID:' + bucketId);
-var connection = new signalR.HubConnectionBuilder().withUrl("/bucketHub?bucketId="+bucketId).build();
+var connection = new signalR.HubConnectionBuilder()
+    .withUrl("/bucketHub?bucketId="+bucketId)
+    .build();
 
 connection.on("ReceiveBucketMessage", function (data) {
     var body = data.body.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    console.log(body);
 
     var table = document.getElementById("messagesList");
     var row = table.insertRow(1);
