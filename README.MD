@@ -5,6 +5,9 @@ This is 'my take' on such a service in a lightweight fashion, doing the things t
 
 Currently requests are persisted in memory only. Might add SQLite or MongoDB later.
 
+![HttpBucket_v1 0](https://user-images.githubusercontent.com/1846780/78944514-5c5a0600-7abe-11ea-8ebe-6a7cfd73ed7f.gif)
+
+
 ## Technology
 - Asp.Net Core 3.1
 - SignalR Core
