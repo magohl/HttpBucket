@@ -1,15 +1,13 @@
 # Information
+I tend to use services like Requestbin to capture and disect HTTP requests while developing or troubleshooting microservices or interfaces. Others have either lacked features, being way to complex or just not suitable in onprem/container/kubernetes environment.
 
-I tend to use services Requestbin to capture and look at HTTP requests whilde developing or troubleshooting microservices/interfaces. Sometimes they lack features i need or are not suitable for onprem/container/kubernetes deployment. Other times they are just to complex for a quick use.
+This is 'my take' on such a service in a lightweight fashion, doing the things that I need.
 
-This is my own take on such a service doing the things that I (often) need.
-
-Currently the requests are persisted in memory only. Might add SQLite or MongoDB later.
+Currently requests are persisted in memory only. Might add SQLite or MongoDB later.
 
 ## Technology
 - Asp.Net Core 3.1
 - SignalR Core
-
 
 # Docker (examples)
 Run in docker
