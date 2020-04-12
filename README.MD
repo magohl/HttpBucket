@@ -1,20 +1,29 @@
-# Information
-I tend to use services like Requestbin to capture and disect HTTP requests while developing or troubleshooting microservices or interfaces. Others have either lacked features, being way to complex or just not suitable in onprem/container/kubernetes environment.
+# Http Bucket
 
-This is 'my take' on such a service in a lightweight fashion, doing the things that I need.
+## Background
+I use services like Requestbin to capture HTTP requests alot while developing or troubleshooting. This is my 'lightweight' take on such a service, doing the things that I need and that work in a docker/kubernetes environment.
 
-Currently requests are persisted in memory only. Might add SQLite or MongoDB later.
-
-![HttpBucket_v1 0](https://user-images.githubusercontent.com/1846780/78944514-5c5a0600-7abe-11ea-8ebe-6a7cfd73ed7f.gif)
-
+## Features
+* Requests are persisted in memory. (Might add SQLite or MongoDB later)
+* Urls can be shared and websockets will push updates to connected clients
+* A new bucket can created by a get to /ui/{some-new-guid} or by using the button on /ui
+* By default an HTTP/200 OK is returned. If you want something else just add the response status code before the bucket id.
 
 ## Technology
-- Asp.Net Core 3.1
-- SignalR Core
+* Asp.Net Core 3.1
+* SignalR Core
 
-# Docker (examples)
+## Run in docker (examples)
 Run in docker
-docker run -p 8080:80 magohl/httpbucket:0.5
+docker run -p 8080:80 magohl/httpbucket:latest
 
 Run in docker behind one (or more) reverse proxies
-docker run -p 8080:80 -e ASPNETCORE_FORWARDEDHEADERS_ENABLED=true magohl/httpbucket:0.5
+docker run -p 8080:80 -e ASPNETCORE_FORWARDEDHEADERS_ENABLED=true magohl/httpbucket:latest
+
+## How does it look?
+![HttpBucket_v1 0](https://user-images.githubusercontent.com/1846780/78944514-5c5a0600-7abe-11ea-8ebe-6a7cfd73ed7f.gif)
+
+## Todo
+* Clean bucket button
+* OIDC login to create/view buckets
+* Return small payloads in body using parameters
