@@ -98,7 +98,7 @@ namespace HttpBucket
                 Received = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 StatusCodeToReturn = retCode,
                 Method = context.Request.Method,
-                Path = context.Request.Path,
+                Path = context.Request.Path + context.Request.QueryString,
                 Headers = ParseHeaders(context.Request.Headers),
                 Body = String.IsNullOrEmpty(body) ? "[EMPTY BODY]" : body
             };
