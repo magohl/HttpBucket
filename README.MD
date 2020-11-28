@@ -23,9 +23,8 @@ https://somehost/{HTTP-RESPOSNE-CODE}/{BUCKET-GUID}/{whatever-url}
 ```
 ```
 https://somehost/405/fe6d3ace-538c-41c3-8141-c9203ab6efb0/foo/bar
-
-This request url would log the request and return a HTTP/405 with an empty body
 ```
+This request url would log the request and return a HTTP/405 with an empty body
 
 ### Return custom Http Response code, headers and body
 ```
@@ -33,9 +32,8 @@ https://somehost/{HTTP-RESPOSNE-CODE}/{BASE64-ENCODED-LIST-OF '|' SEPARATED-HTTP
 ```
 ```
 https://somehost/201/Q29udGVudC10eXBlPWFwcGxpY2F0aW9uL2pzb24=/eyJpY2VjcmVhbXRydWNrIiA6IHRydWV9/fe6d3ace-538c-41c3-8141-c9203ab6efb0/foo
-
-This request URL would log the request and return a HTTP/201 with header "content-type: application/json" and body {"icecreamtruck" : true}
 ```
+This request URL would log the request and return a HTTP/201 with header "content-type: application/json" and body {"icecreamtruck" : true}
 
 
 
