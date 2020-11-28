@@ -12,7 +12,7 @@ I use services like Requestbin to capture HTTP requests alot while developing or
 ## How to use
 
 ### Create bucket
-Created a bucket by doing a simple get to /ui/{some-new-guid} or by using the 'button' on /ui
+Create a new bucket by doing a simple get to /ui/{some-new-guid} or by using the 'button' on /ui
 
 ### UI
 ```
