@@ -1,7 +1,7 @@
 # Http Bucket
 
 # Background
-I use services like Requestbin to capture HTTP requests alot while developing or troubleshooting. This is my 'lightweight' take on such a service, doing the things that I need and that work in a docker/kubernetes environment.
+I use services like Requestbin to capture HTTP requests alot while developing or troubleshooting. This is my 'lightweight' take on such a service, doing the things that I need and that work in a docker/kubernetes environment. By just adding some parameters to the request URL you can control the  HTTP-response code, headers and even add a (small) response body.
 
 # Features
 * Requests persisted in memory
@@ -24,10 +24,10 @@ https://somehost/ui/{BUCKET-GUID}
 https://somehost/{HTTP-RESPOSNE-CODE}/{BUCKET-GUID}/{whatever-url}
 ```
 ```
-example:
+Example: HTTP GET/POST/PUT/DELETE to URL
 https://somehost/405/fe6d3ace-538c-41c3-8141-c9203ab6efb0/foo/bar
 ```
-This request url would log the request and return
+This would log the request and return
 - HTTP/405
 - Empty body
 
@@ -36,15 +36,15 @@ This request url would log the request and return
 https://somehost/{HTTP-RESPOSNE-CODE}/{BASE64-ENCODED-LIST-OF '|' SEPARATED-HTTP-HEADERS}/{BASE64-ENCODED-RESPONSE-BODY}/{BUCKET-GUID}/{whatever-url}
 ```
 ```
-example:
+Example: HTTP GET/POST/PUT/DELETE to URL
 https://somehost/201/Q29udGVudC10eXBlPWFwcGxpY2F0aW9uL2pzb24=/eyJpY2VjcmVhbXRydWNrIiA6IHRydWV9/fe6d3ace-538c-41c3-8141-c9203ab6efb0/foo
 ```
-The request URL above would log the request
+The would log the request and return
 - HTTP/201
 - Content-type: application/json
 - Response body {"icecreamtruck" : true}
 
-
+Note that this only work for small payloads as a typical max request URL is 2Mb. Base64 encoding adds ~30% but something like a 1Mb response body should work fine in most scenarios.
 
 # Technology
 * Dotnet 5.0 and Asp.Net Core 5
