@@ -47,16 +47,35 @@ namespace HttpBucket
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                //Reqest for a specific returncode, body payload and headers
+                endpoints.Map("/{returncode:int?}/{headers}/{payload}/{bucket:guid}/{*url}", async context =>
+                {
+                    var bodyBytes = ParseReturnBody(context);
+                    var headers = ParseReturnHeaders(context);
+                    var retCode = ParseReturnCode(context);
+                    await ProcessRequest(context, retCode, headers, bodyBytes);
+                });
+
+                //Reqest for a specific returncode and body payload
+                endpoints.Map("/{returncode:int?}/{payload}/{bucket:guid}/{*url}", async context =>
+                {
+                    var bodyBytes = ParseReturnBody(context);
+                    var retCode = ParseReturnCode(context);
+                    await ProcessRequest(context, retCode, null, bodyBytes);
+                });
+
+                //Reqest for a specific returncode
                 endpoints.Map("/{returncode:int?}/{bucket:guid}/{*url}", async context =>
                 {
                     var retCode = ParseReturnCode(context);
-                    await ProcessRequest(context, retCode);
+                    await ProcessRequest(context, retCode, null, null);
                 });
 
+                //Reqest
                 endpoints.Map("{bucket:guid}/{*url}", async context =>
                 {
                     var retCode= StatusCodes.Status200OK;
-                    await ProcessRequest(context, retCode);
+                    await ProcessRequest(context, retCode, null, null);
                 });
 
                 endpoints.MapRazorPages();
@@ -64,9 +83,8 @@ namespace HttpBucket
             });
         }
 
-
         /* --- PRIVATE METHODS --- */
-        private async Task ProcessRequest(HttpContext context, int retCode)
+        private async Task ProcessRequest(HttpContext context, int retCode, IEnumerable<KeyValuePair<string, StringValues>> headers, byte[] payload)
         {
             var bucketId = ParseBucketId(context);
             if (!BucketExist(context, bucketId))
@@ -76,6 +94,17 @@ namespace HttpBucket
             }
             await OutputRequestInfo(context, retCode, bucketId);
             context.Response.StatusCode = retCode;
+            if (headers != null)
+            {
+                foreach (var h in headers)
+                {
+                    context.Response.Headers.Append(h.Key, h.Value);
+                }
+            }
+            if (payload != null)
+            {
+                await context.Response.BodyWriter.WriteAsync(payload);
+            }
         }
         
         private async Task OutputRequestInfo(HttpContext context, int retCode, Guid bucketId)
@@ -134,6 +163,26 @@ namespace HttpBucket
 
             if (!int.TryParse(retCodeValue, out var retCode)) return 200;
             return retCode;
+        }
+
+        private byte[] ParseReturnBody(HttpContext context)
+        {
+            var routeValues = context.GetRouteData().Values;
+            var bodyBase64 = routeValues["payload"] as string;
+            var bodyBytes = Convert.FromBase64String(bodyBase64);
+            return bodyBytes;
+        }
+        private IEnumerable<KeyValuePair<string, StringValues>> ParseReturnHeaders(HttpContext context)
+        {
+            var routeValues = context.GetRouteData().Values;
+            var headersBase64 = routeValues["headers"] as string;
+            var headersBytes = Convert.FromBase64String(headersBase64);
+            var headersString = UTF8Encoding.UTF8.GetString(headersBytes);
+            var headerPairs = headersString
+                .Split('|')
+                .Select(x => x.Split('='))
+                .ToDictionary(x => x[0], x => new StringValues(x[1]));
+                return headerPairs;
         }
 
         private string ParseHeaders(IEnumerable<KeyValuePair<string, StringValues>> keyValuePairs)
