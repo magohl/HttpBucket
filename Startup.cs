@@ -51,7 +51,7 @@ namespace HttpBucket
                 endpoints.Map("/{returncode:int?}/{headers}/{payload}/{bucket:guid}/{*url}", async context =>
                 {
                     var bodyBytes = ParseReturnBody(context);
-                    var headers = ParseReturnHeaders(context);
+                    var headers = ParseResponseHeaders(context);
                     var retCode = ParseReturnCode(context);
                     await ProcessRequest(context, retCode, headers, bodyBytes);
                 });
@@ -128,7 +128,7 @@ namespace HttpBucket
                 StatusCodeToReturn = retCode,
                 Method = context.Request.Method,
                 Path = context.Request.Path + context.Request.QueryString,
-                Headers = ParseHeaders(context.Request.Headers),
+                Headers = ParseRequestHeaders(context.Request.Headers),
                 Body = String.IsNullOrEmpty(body) ? "[EMPTY BODY]" : body
             };
 
@@ -172,7 +172,7 @@ namespace HttpBucket
             var bodyBytes = Convert.FromBase64String(bodyBase64);
             return bodyBytes;
         }
-        private IEnumerable<KeyValuePair<string, StringValues>> ParseReturnHeaders(HttpContext context)
+        private IEnumerable<KeyValuePair<string, StringValues>> ParseResponseHeaders(HttpContext context)
         {
             var routeValues = context.GetRouteData().Values;
             var headersBase64 = routeValues["headers"] as string;
@@ -185,7 +185,7 @@ namespace HttpBucket
                 return headerPairs;
         }
 
-        private string ParseHeaders(IEnumerable<KeyValuePair<string, StringValues>> keyValuePairs)
+        private string ParseRequestHeaders(IEnumerable<KeyValuePair<string, StringValues>> keyValuePairs)
         {
             var headersStringBuilder = new StringBuilder();
             foreach (var value in keyValuePairs)
