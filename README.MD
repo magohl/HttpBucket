@@ -46,6 +46,10 @@ The would log the request and return
 
 Note that this only work for small payloads as a typical max request URL is 2Mb. Base64 encoding adds ~30% but something like a 1Mb response body should work fine in most scenarios.
 
+Example forcing a 401 WWW-Authenticate
+This is an example where this service came handy. Some platforms will not add basic authentication headers to outgoing messages if the service does not 100% conform to the Basic Authentication specification and returns a 401 with header "WWW-Authenticate: Basic". Sure the subsequent call will also get the 401 but then you have captured the request content at least.
+https://somehost/401/V1dXLUF1dGhlbnRpY2F0ZT1CYXNpYw==/dGVzdC1yZXNwb25zZQ==/07aa6c39-ae94-4efc-b932-4039c2b3ed6e/bar
+
 # Technology
 * Dotnet 5.0 and Asp.Net Core 5
 * SignalR Core
